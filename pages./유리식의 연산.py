@@ -3,10 +3,6 @@ import random
 import numpy as np
 from PIL import Image
 
-# 박명수 이미지 불러오기
-def load_image():
-    return Image.open("park_myeongsoo.jpg")  # 이미지 경로를 맞게 설정해줘
-
 # 정수로 떨어지는 유리식 연산 문제 생성
 def generate_fraction_problem():
     # 분자와 분모는 정수로 만들기
@@ -52,5 +48,29 @@ def app():
         # 박명수 이미지 출력
         st.image(load_image(), caption="응 아니야")
 
+if __name__ == "__main__":
+    app()
+
+import streamlit as st
+from PIL import Image
+
+# 이미지 업로드 및 표시 함수
+def load_image(uploaded_file):
+    return Image.open(uploaded_file)
+
+# 스트림릿 앱
+def app():
+    st.title("이미지 업로드 및 표시")
+
+    # 파일 업로드 기능
+    uploaded_file = st.file_uploader("이미지를 업로드하세요", type=["jpg", "png", "webp"])
+
+    # 업로드된 파일이 있을 경우
+    if uploaded_file is not None:
+        # 이미지 불러오기
+        image = load_image(uploaded_file)
+        st.image(image, caption="업로드된 이미지", use_column_width=True)
+
+# 앱 실행
 if __name__ == "__main__":
     app()
