@@ -55,21 +55,27 @@ import streamlit as st
 from PIL import Image
 
 # 이미지 업로드 및 표시 함수
-def load_image(uploaded_file):
-    return Image.open(uploaded_file)
+def load_image(uploaded_file=None):
+    if uploaded_file:
+        return Image.open(uploaded_file)  # 업로드된 파일을 불러오기
+    else:
+        return Image.open("assets/park_myeongsoo.jpg")  # 로컬 이미지 파일 경로 설정
 
 # 스트림릿 앱
 def app():
-    st.title("이미지 업로드 및 표시")
+    st.title("유리식의 연산 교과서")
 
-    # 파일 업로드 기능
-    uploaded_file = st.file_uploader("이미지를 업로드하세요", type=["jpg", "png", "webp"])
+    # 이미지 업로드 기능
+    uploaded_file = st.file_uploader("박명수의 얼굴 이미지를 업로드하세요", type=["jpg", "png", "webp"])
 
-    # 업로드된 파일이 있을 경우
+    # 사용자가 이미지를 업로드한 경우
     if uploaded_file is not None:
-        # 이미지 불러오기
         image = load_image(uploaded_file)
-        st.image(image, caption="업로드된 이미지", use_column_width=True)
+        st.image(image, caption="응 아니야", use_column_width=True)
+    else:
+        # 업로드된 파일이 없을 경우, 로컬 이미지 파일을 불러오기
+        image = load_image()
+        st.image(image, caption="응 아니야", use_column_width=True)
 
 # 앱 실행
 if __name__ == "__main__":
