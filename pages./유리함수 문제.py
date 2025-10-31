@@ -4,6 +4,22 @@ from PIL import Image
 
 st.set_page_config(page_title="유리식 문제집", page_icon="📘", layout="centered")
 
+# 💗 핑크색 배경 적용 (CSS 주입)
+page_bg = """
+<style>
+    [data-testid="stAppViewContainer"] {
+        background-color: #ffe6f2;  /* 연한 핑크 */
+    }
+    [data-testid="stHeader"] {
+        background-color: #ffb6c1;  /* 헤더 부분은 좀 더 진한 핑크 */
+    }
+    [data-testid="stSidebar"] {
+        background-color: #ffd6e7;  /* 사이드바도 핑크 톤 */
+    }
+</style>
+"""
+st.markdown(page_bg, unsafe_allow_html=True)
+
 # 이미지 경로 (images 폴더 아래에 IMG_0019.png 를 넣어주세요)
 GANADI_PATH = "images/IMG_0019.png"
 
@@ -14,7 +30,6 @@ st.write("유리식의 성질 · 연산 · 유리함수 성질 문제 총 15문�
 # 유리식 연산 문제 생성: 결과가 정수(1~100)로 떨어지도록 반복 생성
 # -----------------------
 def generate_rational_operation():
-    # 숫자 범위과 시도 제한을 두어 무한루프 방지
     for _ in range(500):
         a = random.randint(1, 12)
         b = random.randint(1, 12)
@@ -34,8 +49,7 @@ def generate_rational_operation():
             expr = f"({a}/{b}) × ({c}/{d})"
             num = a * c
             den = b * d
-        else:  # 나눗셈
-            # 나눗셈: (a/b) ÷ (c/d) = (a*d) / (b*c)
+        else:
             expr = f"({a}/{b}) ÷ ({c}/{d})"
             num = a * d
             den = b * c
@@ -47,11 +61,10 @@ def generate_rational_operation():
         value = num // den
         if 1 <= value <= 100:
             return expr, str(value)
-    # 실패 시 기본 안전 문제 반환 (거의 발생하지 않음)
     return "(1/1) + (1/1)", "2"
 
 # -----------------------
-# 객관식 문제 리스트(개념 문제들) — 고1 공통수학 수준
+# 객관식 개념 문제
 # -----------------------
 concept_problems = [
     ("유리식의 정의로 가장 알맞은 것은?", "두 다항식의 나눗셈 꼴",
@@ -73,18 +86,14 @@ concept_problems = [
 ]
 
 # -----------------------
-# 문제 조합 만들기: 개념 문제 + 연산 문제(6개) => 총 15문제
+# 문제 조합
 # -----------------------
 problems = []
-# 먼저 개념 문제들(객관식)
 for q, ans, opts in concept_problems:
-    # 보기가 5개가 되도록 필요시 보충 (이미 5개로 구성되어 있음)
     problems.append((q, ans, opts.copy()))
 
-# 연산 문제 6개 자동 생성 (답은 1~100 정수 문자열)
 for _ in range(6):
     expr, correct = generate_rational_operation()
-    # 정답을 포함해 보기 5개 생성 (정답 포함)
     wrongs = set()
     while len(wrongs) < 4:
         w = str(random.randint(1, 100))
@@ -94,12 +103,9 @@ for _ in range(6):
     random.shuffle(options)
     problems.append((f"다음을 계산하시오: {expr}", correct, options))
 
-# 개수 맞추기: 현재 개념_problems 갯수(8) + 6 연산 = 14 -> 추가로 한 문제를 더 만들어 고정형 개념문제 추가
-# (원하면 더 조정 가능)
 problems.append(("유리함수에서 분모가 0이면 어떤 일이 일어나나요?", "정의되지 않는다",
                  ["정의된다", "무한히 커진다", "정의되지 않는다", "항상 0이 된다", "함수값이 1이 된다"]))
 
-# 확인: 문제 수가 15인지
 assert len(problems) == 15, f"문제 개수 오류: {len(problems)} (기대값 15)"
 
 # -----------------------
@@ -108,20 +114,16 @@ assert len(problems) == 15, f"문제 개수 오류: {len(problems)} (기대값 1
 st.markdown("## 🧮 문제 풀이 (총 15문제)")
 score = 0
 
-# 로드 가능한지 미리 체크 (이미지 파일)
 ganadi_img = None
 try:
     ganadi_img = Image.open(GANADI_PATH)
 except Exception:
     ganadi_img = None
-    # 파일이 없으면 안내 메시지는 나중에 틀렸을 때 보여줄 것
 
 for i, (q, answer, opts) in enumerate(problems, start=1):
     st.write(f"### {i}. {q}")
-    # 라디오 버튼의 key를 문제 번호로 고유하게 지정
     choice = st.radio(f"문제 {i} 답 선택:", opts, key=f"q{i}")
 
-    # 사용자가 선택하면 바로 피드백 (실전 테스트 형태)
     if choice:
         if choice == answer:
             st.success("정답이야! 🎉")
@@ -137,7 +139,6 @@ for i, (q, answer, opts) in enumerate(problems, start=1):
 st.markdown("---")
 st.write(f"### ✅ 총 {len(problems)}문제 중 정답: {score}문제")
 
-# 간단한 피드백 메시지
 if score == len(problems):
     st.balloons()
     st.success("완벽해요! 유리식 달인입니다 🌟")
