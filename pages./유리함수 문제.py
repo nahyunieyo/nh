@@ -4,17 +4,25 @@ from PIL import Image
 
 st.set_page_config(page_title="유리식 문제집", page_icon="📘", layout="centered")
 
-# 💗 핑크색 배경 적용 (CSS 주입)
+# 💗 배경색 적용 (RGB(203,147,160))
 page_bg = """
 <style>
     [data-testid="stAppViewContainer"] {
-        background-color: #ffe6f2;  /* 연한 핑크 */
+        background-color: rgb(203, 147, 160);  /* 메인 배경 */
     }
     [data-testid="stHeader"] {
-        background-color: #ffb6c1;  /* 헤더 부분은 좀 더 진한 핑크 */
+        background-color: rgb(188, 130, 143);  /* 헤더 부분 */
     }
     [data-testid="stSidebar"] {
-        background-color: #ffd6e7;  /* 사이드바도 핑크 톤 */
+        background-color: rgb(216, 165, 177);  /* 사이드바 부분 */
+    }
+    /* 카드 스타일 느낌으로 문제 영역 강조 */
+    div[data-testid="stVerticalBlock"] > div {
+        background-color: rgba(255, 255, 255, 0.7);
+        border-radius: 15px;
+        padding: 10px 20px;
+        margin-bottom: 12px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15);
     }
 </style>
 """
@@ -64,7 +72,7 @@ def generate_rational_operation():
     return "(1/1) + (1/1)", "2"
 
 # -----------------------
-# 객관식 개념 문제
+# 객관식 개념 문제 (고1 공통수학 수준)
 # -----------------------
 concept_problems = [
     ("유리식의 정의로 가장 알맞은 것은?", "두 다항식의 나눗셈 꼴",
@@ -86,7 +94,7 @@ concept_problems = [
 ]
 
 # -----------------------
-# 문제 조합
+# 문제 조합 만들기
 # -----------------------
 problems = []
 for q, ans, opts in concept_problems:
